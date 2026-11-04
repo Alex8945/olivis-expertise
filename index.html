@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olivis Expertise — Gestion des réclamations</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app" id="app">
+
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-icon">O</div>
+                <div>
+                    Olivis Expertise
+                    <small>GESTION DES RÉCLAMATIONS</small>
+                </div>
+            </div>
+
+            <nav class="nav" aria-label="Navigation principale">
+                <button class="active" data-section="dashboard">Tableau de bord</button>
+                <button data-section="new">Déposer une plainte</button>
+                <button data-section="track">Suivre un dossier</button>
+            </nav>
+
+            <button class="primary" id="quickNew">
+                ＋ <span class="desktop-label">Nouvelle plainte</span>
+            </button>
+        </header>
+
+        <main class="wrap">
+
+            <!-- TABLEAU DE BORD -->
+            <section class="section active" id="dashboard">
+                <div class="hero">
+                    <div>
+                        <div class="eyebrow">Vue d'ensemble · Administration</div>
+                        <h1>Bonjour, équipe support 👋</h1>
+                        <p>
+                            Retrouvez les réclamations clients, suivez leur traitement
+                            et gardez une vue claire sur les dossiers à résoudre.
+                        </p>
+                    </div>
+                    <span class="pill" id="connectionStatus">Connexion en préparation</span>
+                </div>
+
+                <div class="panel staff-panel" id="staffPanel">
+                    <div id="loginPanel">
+                        <div class="form-intro">
+                            <div class="stat-icon">♙</div>
+                            <div>
+                                <h2>Connexion de l'équipe</h2>
+                                <p>Connectez-vous avec un compte du personnel pour accéder aux dossiers.</p>
+                            </div>
+                        </div>
+                        <form id="staffLogin">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="staffEmail">Adresse e-mail</label>
+                                    <input id="staffEmail" type="email" autocomplete="username" required>
+                                </div>
+                                <div class="field">
+                                    <label for="staffPassword">Mot de passe</label>
+                                    <input id="staffPassword" type="password" autocomplete="current-password" required>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="primary" type="submit">Se connecter</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="staffSession" hidden>
+                        <span id="staffIdentity"></span>
+                        <button class="secondary" id="staffLogout" type="button">Se déconnecter</button>
+                    </div>
+                </div>
+
+                <div id="adminContent" hidden>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-head">Total des dossiers <span class="stat-icon">▤</span></div>
+                        <strong id="statTotal">0</strong>
+                        <small>Toutes les réclamations reçues</small>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-head">À traiter <span class="stat-icon">◷</span></div>
+                        <strong id="statNew">0</strong>
+                        <small>Nouveaux dossiers</small>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-head">En cours <span class="stat-icon">↻</span></div>
+                        <strong id="statProgress">0</strong>
+                        <small>Pris en charge par l'équipe</small>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-head">Résolus <span class="stat-icon">✓</span></div>
+                        <strong id="statResolved">0</strong>
+                        <small>Dossiers clôturés</small>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="panel">
+                        <div class="panel-head">
+                            <h2>Réclamations récentes</h2>
+                            <span class="pill" id="rowCount">0 dossier</span>
+                        </div>
+
+                        <div class="search-row">
+                            <input
+                                id="searchInput"
+                                placeholder="Rechercher par référence, client ou sujet…"
+                                aria-label="Rechercher une réclamation"
+                            >
+
+                            <select id="statusFilter" aria-label="Filtrer par statut">
+                                <option value="all">Tous les statuts</option>
+                                <option value="Nouveau">Nouveau</option>
+                                <option value="En cours">En cours</option>
+                                <option value="Résolu">Résolu</option>
+                            </select>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>RÉFÉRENCE</th>
+                                        <th>CLIENT / SUJET</th>
+                                        <th>DATE</th>
+                                        <th>STATUT</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="complaintRows"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <aside class="panel">
+                        <div class="panel-head">
+                            <h2>Dernières activités</h2>
+                            <span class="muted">Récent</span>
+                        </div>
+
+                        <div id="activities">
+                            <p class="muted">Les activités récentes apparaîtront ici.</p>
+                        </div>
+
+                        <div class="note">
+                            <strong>Accès protégé</strong>
+                            Les coordonnées et descriptions des réclamations sont réservées au personnel connecté.
+                        </div>
+                    </aside>
+                </div>
+                </div>
+            </section>
+
+            <!-- FORMULAIRE DE RÉCLAMATION -->
+            <section class="section" id="new">
+                <div class="hero">
+                    <div>
+                        <div class="eyebrow">Espace client</div>
+                        <h1>Comment pouvons-nous vous aider ?</h1>
+                        <p>
+                            Décrivez votre problème. Notre équipe examinera votre demande
+                            et vous pourrez suivre son avancement grâce à votre référence.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="client-grid">
+                    <div class="panel form-panel">
+                        <div class="form-intro">
+                            <div class="stat-icon">✎</div>
+                            <div>
+                                <h2>Déposer une réclamation</h2>
+                                <p>Les champs marqués d'un astérisque sont obligatoires.</p>
+                            </div>
+                        </div>
+
+                        <form id="complaintForm">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="clientName">Nom complet *</label>
+                                    <input id="clientName" required placeholder="Ex. : Awa Koné">
+                                </div>
+
+                                <div class="field">
+                                    <label for="clientEmail">Adresse e-mail *</label>
+                                    <input
+                                        id="clientEmail"
+                                        type="email"
+                                        required
+                                        placeholder="vous@exemple.com"
+                                    >
+                                </div>
+
+                                <div class="field">
+                                    <label for="clientPhone">Téléphone (facultatif)</label>
+                                    <input id="clientPhone" type="tel" placeholder="Ex. : 07 00 00 00 00">
+                                </div>
+
+                                <div class="field">
+                                    <label for="category">Catégorie *</label>
+                                    <select id="category" required>
+                                        <option value="">Choisir une catégorie</option>
+                                        <option>Facturation / Paiement</option>
+                                        <option>Qualité du service</option>
+                                        <option>Retard / Livraison</option>
+                                        <option>Service client</option>
+                                        <option>Problème technique</option>
+                                        <option>Autre</option>
+                                    </select>
+                                </div>
+
+                                <div class="field full">
+                                    <label for="subject">Objet de la réclamation *</label>
+                                    <input
+                                        id="subject"
+                                        required
+                                        maxlength="100"
+                                        placeholder="Résumez votre problème en quelques mots"
+                                    >
+                                </div>
+
+                                <div class="field full">
+                                    <label for="description">Description détaillée *</label>
+                                    <textarea
+                                        id="description"
+                                        required
+                                        minlength="15"
+                                        placeholder="Expliquez ce qui s'est passé, la date concernée et la solution souhaitée…"
+                                    ></textarea>
+                                    <span class="help">
+                                        Évitez d'inclure des mots de passe ou des informations bancaires confidentielles.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="secondary" id="clearForm">Effacer</button>
+                                <button type="submit" class="primary">Envoyer la réclamation →</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <aside>
+                        <div class="panel">
+                            <h2 style="margin-bottom:15px">Après l'envoi</h2>
+
+                            <div class="activity">
+                                <div class="activity-icon">①</div>
+                                <div>
+                                    <strong>Une référence unique</strong>
+                                    <p>Elle vous permet de retrouver votre dossier.</p>
+                                </div>
+                            </div>
+
+                            <div class="activity">
+                                <div class="activity-icon">②</div>
+                                <div>
+                                    <strong>Une équipe mobilisée</strong>
+                                    <p>Votre demande est examinée puis prise en charge.</p>
+                                </div>
+                            </div>
+
+                            <div class="activity">
+                                <div class="activity-icon">③</div>
+                                <div>
+                                    <strong>Un suivi transparent</strong>
+                                    <p>Consultez le statut et les réponses de l'équipe.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="note">
+                        <strong>Confidentialité</strong>
+                        Les données personnelles ne sont accessibles qu'aux membres du personnel connectés.
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- SUIVI DES DOSSIERS -->
+            <section class="section" id="track">
+                <div class="hero">
+                    <div>
+                        <div class="eyebrow">Espace client</div>
+                        <h1>Suivre ma réclamation</h1>
+                        <p>
+                            Saisissez la référence reçue après le dépôt de votre demande
+                            pour consulter son état d'avancement.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="track-card">
+                    <div class="panel">
+                        <div class="form-intro">
+                            <div class="stat-icon">⌕</div>
+                            <div>
+                                <h2>Retrouver un dossier</h2>
+                                <p>Exemple de référence : RF-2026-1024</p>
+                            </div>
+                        </div>
+
+                        <form id="trackForm">
+                            <label for="trackRef" style="font-size:12px;font-weight:750">
+                                Numéro de référence
+                            </label>
+
+                            <input
+                                id="trackRef"
+                                class="track-input"
+                                placeholder="RF-2026-A1B2C3D4"
+                                required
+                            >
+
+                            <button class="primary" style="width:100%" type="submit">
+                                Consulter le dossier →
+                            </button>
+                        </form>
+
+                        <div id="trackResult" class="track-result" aria-live="polite"></div>
+                    </div>
+
+                    <p class="help" style="text-align:center;margin-top:13px">
+                        Le suivi affiche uniquement les informations nécessaires et ne révèle pas vos coordonnées.
+                    </p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div>
+                <strong>Olivis Expertise</strong> · Portail de gestion des plaintes et réclamations
+            </div>
+            <div>Données hébergées de manière sécurisée avec Supabase</div>
+        </footer>
+
+        <div class="toast" id="toast" role="status"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
